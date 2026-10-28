@@ -1,0 +1,30 @@
+@model Provider
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Headquarters" class="form-label"></label>
+        <input asp-for="Headquarters" class="form-control" />
+        <span asp-validation-for="Headquarters" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Website" class="form-label"></label>
+        <input asp-for="Website" class="form-control" placeholder="https://..." />
+        <span asp-validation-for="Website" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="FoundedYear" class="form-label"></label>
+        <input asp-for="FoundedYear" class="form-control" />
+        <span asp-validation-for="FoundedYear" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>

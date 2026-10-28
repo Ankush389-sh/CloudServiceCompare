@@ -1,0 +1,73 @@
+@model List<CloudService>
+@{ ViewData["Title"] = "Compare"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Compare Services</h3>
+    <div>
+        <a asp-controller="Services" asp-action="Index" class="btn btn-outline-primary">+ Add more</a>
+        @if (Model.Any())
+        {
+            <form asp-action="Clear" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger">Clear all</button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Your compare list is empty. Go to <a asp-controller="Services" asp-action="Index">Services</a> and click
+        <strong>+ Compare</strong> on up to 3 services of the same category.
+    </div>
+}
+else
+{
+    var multi = Model.Count > 1;
+    var minPrice = Model.Min(s => s.StartingPrice);
+    var maxSla = Model.Max(s => s.UptimeSla);
+    var maxReg = Model.Max(s => s.RegionCount);
+    var maxRate = Model.Max(s => s.AvgRating);
+
+    <p class="text-muted">Category: <strong>@Model.First().Category</strong> · Best value in each row is highlighted in green.</p>
+    <div class="table-responsive">
+        <table class="table table-bordered compare-table text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th></th>
+                    @foreach (var s in Model)
+                    {
+                        <th>
+                            <a asp-controller="Services" asp-action="Details" asp-route-id="@s.Id">@s.Name</a>
+                            <form asp-action="Remove" asp-route-id="@s.Id" method="post" class="mt-1">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr><th class="text-start">Provider</th>
+                    @foreach (var s in Model) { <td><span class="badge pbadge @UiHelper.ProviderClass(s.Provider.Name)">@s.Provider.Name</span></td> }</tr>
+                <tr><th class="text-start">Starting Price / month</th>
+                    @foreach (var s in Model) { <td class="@(multi && s.StartingPrice == minPrice ? "table-success fw-bold" : "")">@(s.StartingPrice == 0 ? "Pay per use" : "$" + s.StartingPrice.ToString("0.00"))</td> }</tr>
+                <tr><th class="text-start">Uptime SLA</th>
+                    @foreach (var s in Model) { <td class="@(multi && s.UptimeSla == maxSla ? "table-success fw-bold" : "")">@s.UptimeSla.ToString("0.###")%</td> }</tr>
+                <tr><th class="text-start">Regions</th>
+                    @foreach (var s in Model) { <td class="@(multi && s.RegionCount == maxReg ? "table-success fw-bold" : "")">@s.RegionCount</td> }</tr>
+                <tr><th class="text-start">Free Tier</th>
+                    @foreach (var s in Model) { <td>@(s.FreeTier ? "Yes ✔" : "No ✘")</td> }</tr>
+                <tr><th class="text-start">User Rating</th>
+                    @foreach (var s in Model)
+                    {
+                        <td class="@(multi && s.Reviews.Any() && s.AvgRating == maxRate ? "table-success fw-bold" : "")">
+                            @if (s.Reviews.Any()) { <span class="stars">★</span> @s.AvgRating.ToString("0.0") <small class="text-muted">(@s.Reviews.Count)</small> }
+                            else { <span class="text-muted">No reviews</span> }
+                        </td>
+                    }</tr>
+                <tr><th class="text-start">Description</th>
+                    @foreach (var s in Model) { <td class="small text-start">@s.Description</td> }</tr>
+            </tbody>
+        </table>
+    </div>
+}

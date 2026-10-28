@@ -1,0 +1,28 @@
+@model Review
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="CloudServiceId" />
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="ReviewerName" class="form-label"></label>
+        <input asp-for="ReviewerName" class="form-control" />
+        <span asp-validation-for="ReviewerName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Rating" class="form-label"></label>
+        <select asp-for="Rating" class="form-select">
+            <option value="0">-- Select rating --</option>
+            <option value="5">★★★★★ (5) Excellent</option>
+            <option value="4">★★★★ (4) Good</option>
+            <option value="3">★★★ (3) Average</option>
+            <option value="2">★★ (2) Poor</option>
+            <option value="1">★ (1) Bad</option>
+        </select>
+        <span asp-validation-for="Rating" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Comment" class="form-label"></label>
+        <textarea asp-for="Comment" rows="3" class="form-control"></textarea>
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+</div>

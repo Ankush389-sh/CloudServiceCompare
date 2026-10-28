@@ -1,0 +1,41 @@
+@model Provider
+@{ ViewData["Title"] = Model.Name; }
+
+<div class="card shadow-sm mb-4"><div class="card-body">
+    <h3>@Model.Name</h3>
+    <p class="text-muted mb-2">@Model.Description</p>
+    <dl class="row mb-0">
+        <dt class="col-sm-3">Headquarters</dt><dd class="col-sm-9">@Model.Headquarters</dd>
+        <dt class="col-sm-3">Founded</dt><dd class="col-sm-9">@Model.FoundedYear</dd>
+        <dt class="col-sm-3">Website</dt><dd class="col-sm-9"><a href="@Model.Website" target="_blank" rel="noopener">@Model.Website</a></dd>
+        <dt class="col-sm-3">Overall Rating</dt>
+        <dd class="col-sm-9">
+            @if (Model.ReviewCount > 0) { <span class="stars">★</span> @Model.AvgRating.ToString("0.0") <span class="text-muted">(@Model.ReviewCount reviews)</span> }
+            else { <span class="text-muted">No reviews yet</span> }
+        </dd>
+    </dl>
+</div></div>
+
+<h5>Services by @Model.Name</h5>
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-primary"><tr><th>Service</th><th>Category</th><th>Price / month</th><th>SLA</th><th>Rating</th></tr></thead>
+        <tbody>
+            @foreach (var s in Model.Services.OrderBy(x => x.Category))
+            {
+                <tr>
+                    <td><a asp-controller="Services" asp-action="Details" asp-route-id="@s.Id">@s.Name</a></td>
+                    <td>@s.Category</td>
+                    <td>@(s.StartingPrice == 0 ? "Pay per use" : "$" + s.StartingPrice.ToString("0.00"))</td>
+                    <td>@s.UptimeSla.ToString("0.###")%</td>
+                    <td>@(s.Reviews.Any() ? s.AvgRating.ToString("0.0") + " ★" : "-")</td>
+                </tr>
+            }
+            @if (!Model.Services.Any())
+            {
+                <tr><td colspan="5" class="text-center text-muted">No services yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

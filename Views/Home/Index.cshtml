@@ -1,0 +1,79 @@
+@model List<Provider>
+@{ ViewData["Title"] = "Home"; }
+
+<div class="hero mb-4">
+    <span class="badge bg-light text-dark mb-3">☁️ AWS · Azure · Google Cloud</span>
+    <h1 class="display-5">Find the right cloud,<br />without the guesswork.</h1>
+    <p class="lead mb-4 col-lg-7">Browse cloud services, compare price, uptime SLA and regions side by side, and read honest user reviews.</p>
+    <a class="btn btn-light btn-lg me-2" asp-controller="Services" asp-action="Index">Browse Services</a>
+    <a class="btn btn-outline-light btn-lg" asp-controller="Compare" asp-action="Index">Open Compare</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4"><div class="card stat-card"><div class="card-body">
+        <div class="stat-icon">🏢</div>
+        <div><div class="text-muted small">Providers</div><h2 data-count="@ViewBag.ProviderCount">@ViewBag.ProviderCount</h2></div>
+    </div></div></div>
+    <div class="col-12 col-md-4"><div class="card stat-card"><div class="card-body">
+        <div class="stat-icon">🧩</div>
+        <div><div class="text-muted small">Services</div><h2 data-count="@ViewBag.ServiceCount">@ViewBag.ServiceCount</h2></div>
+    </div></div></div>
+    <div class="col-12 col-md-4"><div class="card stat-card"><div class="card-body">
+        <div class="stat-icon">⭐</div>
+        <div><div class="text-muted small">User Reviews</div><h2 data-count="@ViewBag.ReviewCount">@ViewBag.ReviewCount</h2></div>
+    </div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card h-100"><div class="card-body">
+            <h5 class="card-title mb-3">🏆 Provider Ranking</h5>
+            <div class="table-responsive shadow-none">
+                <table class="table align-middle">
+                    <thead><tr><th>#</th><th>Provider</th><th>Rating</th><th>Reviews</th></tr></thead>
+                    <tbody>
+                        @{ int rank = 1; }
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@(rank++)</td>
+                                <td><a asp-controller="Providers" asp-action="Details" asp-route-id="@p.Id" class="fw-semibold">@p.Name</a></td>
+                                <td>
+                                    @if (p.ReviewCount > 0) { <span class="stars">★</span> @p.AvgRating.ToString("0.0") }
+                                    else { <span class="text-muted">-</span> }
+                                </td>
+                                <td>@p.ReviewCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div></div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card h-100"><div class="card-body">
+            <h5 class="card-title mb-3">💲 Average Starting Price by Category <small class="text-muted">(USD / month)</small></h5>
+            <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+        </div></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        const chartData = @Html.Raw(ViewBag.ChartJson);
+        const colors = { 'Amazon Web Services': '#ff9900', 'Microsoft Azure': '#0078d4', 'Google Cloud Platform': '#34a853' };
+        Chart.defaults.font.family = 'Inter, sans-serif';
+        Chart.defaults.color = getComputedStyle(document.body).color;
+        chartData.datasets.forEach(function (d) { d.backgroundColor = colors[d.label] || '#6366f1'; d.borderRadius = 8; });
+        new Chart(document.getElementById('priceChart'), {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                animation: { duration: 900, easing: 'easeOutQuart' },
+                scales: { y: { beginAtZero: true, grid: { color: 'rgba(128,128,128,.15)' } }, x: { grid: { display: false } } }
+            }
+        });
+    </script>
+}

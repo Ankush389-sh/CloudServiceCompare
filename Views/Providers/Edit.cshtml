@@ -1,0 +1,14 @@
+@model Provider
+@{ ViewData["Title"] = "Edit Provider"; }
+
+<h3 class="mb-3">Edit Provider</h3>
+<div class="card shadow-sm"><div class="card-body">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <partial name="_Form" />
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div></div>

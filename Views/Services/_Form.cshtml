@@ -1,0 +1,50 @@
+@model CloudService
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="ProviderId" class="form-label"></label>
+        <select asp-for="ProviderId" class="form-select" asp-items="(SelectList)ViewBag.Providers">
+            <option value="0">-- Select provider --</option>
+        </select>
+        <span asp-validation-for="ProviderId" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Category" class="form-label"></label>
+        <select asp-for="Category" class="form-select" asp-items="@(new SelectList(Categories.List))">
+            <option value="">-- Select category --</option>
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="StartingPrice" class="form-label"></label>
+        <input asp-for="StartingPrice" class="form-control" />
+        <span asp-validation-for="StartingPrice" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="UptimeSla" class="form-label"></label>
+        <input asp-for="UptimeSla" class="form-control" />
+        <span asp-validation-for="UptimeSla" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="RegionCount" class="form-label"></label>
+        <input asp-for="RegionCount" class="form-control" />
+        <span asp-validation-for="RegionCount" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <div class="form-check">
+            <input asp-for="FreeTier" class="form-check-input" />
+            <label asp-for="FreeTier" class="form-check-label"></label>
+        </div>
+    </div>
+</div>

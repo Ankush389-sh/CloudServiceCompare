@@ -1,0 +1,45 @@
+@model IEnumerable<Provider>
+@{
+    ViewData["Title"] = "Providers";
+    var isAdmin = !string.IsNullOrEmpty(Context.Session.GetString("Admin"));
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Cloud Providers</h3>
+    @if (isAdmin) { <a asp-action="Create" class="btn btn-primary">+ Add Provider</a> }
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-primary">
+            <tr><th>Name</th><th>Headquarters</th><th>Founded</th><th>Services</th><th>Rating</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@p.Id" class="fw-semibold">@p.Name</a></td>
+                    <td>@p.Headquarters</td>
+                    <td>@p.FoundedYear</td>
+                    <td>@p.Services.Count</td>
+                    <td>
+                        @if (p.ReviewCount > 0) { <span class="stars">★</span> @p.AvgRating.ToString("0.0") }
+                        else { <span class="text-muted">-</span> }
+                    </td>
+                    <td class="text-nowrap">
+                        <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">View</a>
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-danger">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted">No providers yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

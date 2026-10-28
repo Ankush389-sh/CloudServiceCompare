@@ -1,0 +1,17 @@
+@model CloudService
+@{ ViewData["Title"] = "Delete Service"; }
+
+<h3 class="mb-3 text-danger">Delete Service</h3>
+<div class="card shadow-sm"><div class="card-body">
+    <p>Are you sure you want to delete this service? Its reviews will be deleted too.</p>
+    <dl class="row">
+        <dt class="col-sm-3">Service</dt><dd class="col-sm-9">@Model.Name</dd>
+        <dt class="col-sm-3">Provider</dt><dd class="col-sm-9">@Model.Provider.Name</dd>
+        <dt class="col-sm-3">Category</dt><dd class="col-sm-9">@Model.Category</dd>
+    </dl>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div></div>

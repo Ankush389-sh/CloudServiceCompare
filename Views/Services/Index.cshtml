@@ -1,0 +1,99 @@
+@model IEnumerable<CloudService>
+@{
+    ViewData["Title"] = "Services";
+    var isAdmin = !string.IsNullOrEmpty(Context.Session.GetString("Admin"));
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    string selCat = ViewBag.Category;
+    string selSort = ViewBag.Sort;
+    int idx = 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0 fw-bold">Cloud Services</h3>
+    @if (isAdmin) { <a asp-action="Create" class="btn btn-primary">+ Add Service</a> }
+</div>
+
+<form method="get" id="filterForm" class="card card-body mb-4">
+    <div class="row g-2">
+        <div class="col-12 col-md-3">
+            <input name="search" value="@ViewBag.Search" class="form-control" placeholder="🔍 Search services..." autocomplete="off" />
+        </div>
+        <div class="col-6 col-md-2">
+            <select name="category" class="form-select">
+                <option value="">All categories</option>
+                @foreach (var c in Categories.List)
+                {
+                    <option value="@c" selected="@(selCat == c)">@c</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-3">
+            <select name="providerId" class="form-select" asp-items="(SelectList)ViewBag.Providers">
+                <option value="">All providers</option>
+            </select>
+        </div>
+        <div class="col-6 col-md-2">
+            <select name="sort" class="form-select">
+                <option value="" selected="@(string.IsNullOrEmpty(selSort))">Sort: Category</option>
+                <option value="price_asc" selected="@(selSort == "price_asc")">Price: Low to High</option>
+                <option value="price_desc" selected="@(selSort == "price_desc")">Price: High to Low</option>
+                <option value="sla" selected="@(selSort == "sla")">Best SLA</option>
+                <option value="rating" selected="@(selSort == "rating")">Top Rated</option>
+            </select>
+        </div>
+        <div class="col-6 col-md-2 d-grid">
+            <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+        </div>
+    </div>
+</form>
+
+<div id="results">
+    <p class="text-muted small">Showing <strong>@Model.Count()</strong> service(s)</p>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 svc-grid">
+        @foreach (var s in Model)
+        {
+            <div class="col" style="--i:@(idx++)">
+                <div class="card svc-card h-100 @UiHelper.ProviderClass(s.Provider.Name)">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge pbadge @UiHelper.ProviderClass(s.Provider.Name)">@s.Provider.Name</span>
+                            <span class="badge text-bg-secondary rounded-pill align-self-center">@s.Category</span>
+                        </div>
+                        <h5 class="card-title fw-bold">
+                            <a asp-action="Details" asp-route-id="@s.Id" class="text-reset">@s.Name</a>
+                        </h5>
+                        <p class="text-muted small flex-grow-1">@s.Description</p>
+                        <div class="price mb-1">
+                            @(s.StartingPrice == 0 ? "Pay per use" : "$" + s.StartingPrice.ToString("0.00"))
+                            @if (s.StartingPrice > 0) { <small class="text-muted fs-6 fw-normal">/ month</small> }
+                        </div>
+                        <div class="small mb-3">
+                            SLA <strong>@s.UptimeSla.ToString("0.###")%</strong> ·
+                            <strong>@s.RegionCount</strong> regions ·
+                            @(s.FreeTier ? "Free tier ✔" : "No free tier")<br />
+                            @if (s.Reviews.Any()) { <span class="stars">★</span> @s.AvgRating.ToString("0.0") <span class="text-muted">(@s.Reviews.Count)</span> }
+                            else { <span class="text-muted">No reviews yet</span> }
+                        </div>
+                        <div class="d-flex flex-wrap gap-1">
+                            <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                            <form asp-controller="Compare" asp-action="Add" method="post" class="d-inline ajax-compare">
+                                <input type="hidden" name="id" value="@s.Id" />
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                <button type="submit" class="btn btn-sm btn-primary">+ Compare</button>
+                            </form>
+                            @if (isAdmin)
+                            {
+                                <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@s.Id" class="btn btn-sm btn-danger">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted py-5">😕 No services match your filters.</div>
+    }
+</div>
